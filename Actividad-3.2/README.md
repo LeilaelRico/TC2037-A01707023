@@ -3,6 +3,12 @@ El programa consta de un archivo de extensión .cpp atribuido al lenguaje de c++
 
 El archivo .cpp debe de ser compilado para que este, posteriormente en su forma de .exe pueda ser ejecutado desde la terminal del equipo.   
 
+## Instrucciones para ejecución desde terminal.
+**Nota: Asegurarse de contar con compilador como *MINGW*.**   
+1. Dirigirse al directorio donde se encuentra el main.cpp.
+2. Ejecutar el comando: g++ main.cpp
+3. Posteriormente ingresar ./a.exe "nombredelarchivo" 
+
 ## Instrucciones de ejecución en Visual Studio Code
 1. Crear una carpeta y guardar en ella el archivo main.cpp y los dos archivos .txt.
 2. Desde la pestaña File, seleccionar la opción de Open Folder.
