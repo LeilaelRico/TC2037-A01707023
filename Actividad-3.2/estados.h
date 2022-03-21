@@ -66,7 +66,7 @@ void esVariable(string caracter, int& posicion){
 		posicion++;
 	}
 	if (caracter[posicion] == '.')
-		cout << "ERRORVAR";
+		//cout << "ERRORVAR";
 	else
 		cout << output << '\t' << "|VARIABLE" << '\n';
 
