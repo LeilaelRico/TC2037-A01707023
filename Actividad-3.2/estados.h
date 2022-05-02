@@ -34,7 +34,7 @@ void esNumero (string caracter, int& posicion, string output){
             }
             
             if (caracter[posicion] == '.' || caracter[posicion] == '_' || isalpha(caracter[posicion])) {}
-                //cout << "|EXP ERROR";
+                cout << "|EXP ERROR";
 
             else
                 cout << output << '\t' << "|REAL" << '\n';
@@ -42,7 +42,7 @@ void esNumero (string caracter, int& posicion, string output){
         }
 
         else if(caracter[posicion] == '.') {}
-            //cout << "|REAL ERROR";
+            cout << "|REAL ERROR";
 
         else
             cout << output << '\t' << "|REAL" << '\n';
@@ -50,7 +50,7 @@ void esNumero (string caracter, int& posicion, string output){
     }
 
 	else if (isalpha(caracter[posicion])) {}
-		//cout << "|MAIN ERROR";
+		cout << "|MAIN ERROR";
 
 	else
 		cout << output << '\t' << "|INTEGER" << '\n';
@@ -66,7 +66,7 @@ void esVariable(string caracter, int& posicion){
 		posicion++;
 	}
 	if (caracter[posicion] == '.')
-		//cout << "ERRORVAR";
+		cout << "ERRORVAR";
 	else
 		cout << output << '\t' << "|VARIABLE" << '\n';
 
