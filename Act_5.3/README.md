@@ -1,5 +1,5 @@
 # Ejecución del programa.
-### Plataforma de desarrollo: MacOS   
+### Plataforma de ejecución: MacOS   
 
 Para compilarlo, introducir el siguiente comando en consola:   
  
@@ -9,7 +9,7 @@ Para su ejecución, posteriormente:
 
      ./a.out
     
-### Plataforma de desarrollo: Windows   
+### Plataforma de ejecución: Windows   
 
 Para compilarlo, introducir el siguiente comando en consola:   
  
