@@ -1,7 +1,7 @@
 # Ejecución del programa.
 Para compilarlo, introducir el siguiente comando en consola:   
 
-    g++ Act_Bauinos.cpp -lpthread   
+    g++ Act_Babuinos.cpp -lpthread   
     
 Para su ejecución, posteriormente:  
 
