@@ -1,150 +1,146 @@
-/**************************************************
-ITESM Campus Querétaro
-Olivia Araceli Morales Quezada
-Cristian Leilael Rico Espinosa
-**************************************************/
+/* *********************************************************************************
 
-#include <iostream>
-#include <iomanip>
+ ITESM Querétato
+ Olivia Araceli Morales Quezada A01707371
+ Ricardo Núñez Alanís A01703259
+ Cristian Leilael Rico Espinosa A01707023
+
+ Basado en el Trabajo de Paul Rehkugler (https://github.com/paulrehkugler)
+	Repositorio: https://github.com/paulrehkugler/Baboons
+
+********************************************************************************* */
+
+#include <semaphore.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <pthread.h>
-#include "utils.h"
 #include <math.h>
+#include <iostream>
+#include <pthread.h>
+#include <random>
+#include <algorithm>
+#include <iterator>
+#include <vector>
 
 using namespace std;
 
 
-const int SIZE = 5000000; //5e9
-const int THREADS = 8;
+#define CROSSING_TIME 1	// Segundos para cruzar la cuerda
+#define AVERAGE_CREATION_TIME 3	// Promedio en segundos en los que los babuinos se crean en uno de los extremos
+#define BABOONS_TO_CROSS 20	// Número total de babuinos.
 
+/* Creación de Semáforos */
 
-/* ======================== Ejecución Secuencial ======================== */
+sem_t crossers_mut;											// Controla el acceso de los babuinos que cruzarán
+sem_t rope_mut;												// Controla el acceso a la cuerda
+sem_t write_mut;											// Gracias a este, se imprime en pantalla quiénes están cruzando la cuerda
+int crossers = 0;											// Número de babuinos generados en el este, en caso de ser número negativo, se indicarían a los babuinos del oeste.
 
-bool esPrimo (int var){
-    if (var < 2)
-        return false;
-    for (int i = 2; i <= sqrt(var); i++) {
-        if (var % i == 0) {
-            return false;
-        }
-    }
-    return true;
+void cross_rope(int crosser){
+	string direction;
+	if (crosser > 0)
+		direction = "Eastbound";
+	else{
+		direction = "Westbound";
+		crosser = -crosser;
+	}
+	sem_wait(&write_mut);									// Apunta al semáforo de escritura
+	cout << direction << " baboon crossing the rope...\t" << crosser << " " << direction << " baboon(s) are currently crossing." << endl;
+	sem_post(&write_mut);
+	sleep(CROSSING_TIME);									// Cruce de cuerda
+}
+
+void *eastbound_baboon(void*){
+	bool done = false;
+	int crossers_copy;
+	while (!done){
+		sem_wait(&crossers_mut);							// Apunta a los babuinos que cruzarán
+		if (crossers >= 0){
+			++crossers;										// Aumenta el número de babuinos del este en caso de que la cuerda les dé el flujo o esté desocupada.
+			crossers_copy = crossers;						// Se guarda el número de babuinos a cruzar para después guardar 
+			if (crossers == 1)
+				sem_wait(&rope_mut);						// Acceso exclusivo a la cuerda en caso de ser el primer babuino a cruzar.
+			sem_post(&crossers_mut);						// Quita el acceso a la cuerda.
+			cross_rope(crossers_copy);						// Los babuinos anteriormente guardados cruzan la cuerda.
+			sem_wait(&crossers_mut);						// get access to crossers again, after crossinfaltg
+			--crossers;										// El número de babuinos a cruzar decrece.
+			if (crossers == 0)
+				sem_post(&rope_mut);						// En caso de que quede un último babuino, quitarle el acceso a la cuerda
+			done = true;									// Detiene el ciclo
+		}
+		else
+			sleep(0);
+		sem_post(&crossers_mut);
+	}
+	return 0;
+}
+
+/* Función similar a la anterior, solamente que para los babuinos del oeste */
+
+void *westbound_baboon(void*){
+	bool done = false;
+	int crossers_copy;
+	while (!done){
+		sem_wait(&crossers_mut);
+		if (crossers <= 0){
+			--crossers;
+			crossers_copy = crossers;
+			if (crossers == -1)
+				sem_wait(&rope_mut);
+			sem_post(&crossers_mut);
+			cross_rope(crossers_copy);
+			sem_wait(&crossers_mut);
+			++crossers;
+			if (crossers == 0)
+				sem_post(&rope_mut);
+			done = true;
+		}
+		else
+			sleep(0);
+		sem_post(&crossers_mut);
+	}
+	return 0;
 }
 
 
-double sumaPrimo (int size) {
-    double acum = 0;
+int main(){
 
-    for (int i = 0; i <= size; i++) {
-        if(esPrimo(i) == true){
-        acum = acum + i;
-        }
-    }
-    return acum;
-}
+	/* Inicialización de Mutexs */
+	sem_init(&crossers_mut, 0, 1);
+	sem_init(&rope_mut, 0, 1);
+	sem_init(&write_mut, 0, 1);
 
-/* ======================================================================= */
+	pthread_t baboons[BABOONS_TO_CROSS];
+	srand(time(NULL));
 
+	/* 
+		Se crea vector con la dirección en la que se generarán los babuinos;
+		los datos dentro del vector cambiarán de lugar de manera aleatoria con la función shuffle.
+	*/
 
-/* ======================== Ejecución en Paralelo ======================== */
+	vector<int> direction = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+ 
+    random_device rd;
+    mt19937 g(rd());
+ 
+    shuffle(direction.begin(), direction.end(), g);
+ 
+    copy(direction.begin(), direction.end(), ostream_iterator<int>(std::cout, " "));
 
-typedef struct {
-  int start, end; // [start, end)
-  int *arr;
-} Block;
+	// Se crean babuinos
+	for (int i = 0; i < BABOONS_TO_CROSS; ++i){
+		int thinking_time = (rand() % 5);
+															// espera un lapso de tiempo random para crear un babuino
+		sleep(thinking_time);
+		
+		if (direction[i] > 10){								// Crea un babuino en el este en caso de que el número del vector "direction" en su i-ésima posición sea mayor a 10.
+			pthread_create(&baboons[i], NULL, eastbound_baboon, (void *)i);
+		}
+		else												// Crea un babuino en el oeste.
+			pthread_create(&baboons[i], NULL, westbound_baboon, (void *)i);
+	}
 
-void* parsumPrim(void* param) {
-
-  double *acum;
-  Block *block;
-  int i;
-
-
-  block = (Block *) param;
-  acum =  new double;
-  (*acum) = 0;
-
-  for (i = block->start; i < block->end; i++) {
-    if(esPrimo(i) == true){
-        (*acum) = (*acum) + i;
-    }
-
-  }
-  return ( (void**) acum );
-
-
-}
-
-/* ======================================================================= */
-
-int main (int argc, char* argv[]) {
-
-    
-    int *a, i, block_size;
-    double tiempoP, tiempoS, resultadoP, resultadoS, *acum;
-
-    Block blocks[THREADS];
-    pthread_t tids[THREADS];
-
-    a = new int[SIZE];
-    //fill_array(a, SIZE);
-    //display_array("a", a);
-
-    /* ===================== Llamada de función secuencial ===================== */
-    
-    start_timer();
-    resultadoS = sumaPrimo(SIZE);
-    tiempoS = stop_timer();
-    cout << "\n==================================================================" << endl;
-    cout << "Resultado en Secuencial = " << setprecision(5) << resultadoS << "\n";
-    cout << "Tiempo Promedio =  " << setprecision(5) << ( tiempoS / N ) << "\n";
-
-    /* ========================================================================= */
-
-    /* ===================== Llamada de función en paralelo ==================== */
-
-
-    block_size = SIZE / THREADS;
-    for (i = 0; i < THREADS; i++) {
-        blocks[i].arr = a;
-        blocks[i].start = i * block_size;
-        if (i != (THREADS - 1)) {
-            blocks[i].end = (i + 1) * block_size;
-        } else {
-            blocks[i].end = SIZE;
-        }
-    }
-    start_timer();
-    tiempoP = 0;
-    resultadoP = 0;
-     
-     for (i = 0; i < THREADS; i++) {
-         pthread_create(&tids[i], NULL, parsumPrim, (void*) &blocks[i]);
-     }
-     
-     for (i = 0; i < THREADS; i++) {
-         pthread_join(tids[i], (void**) &acum);
-         resultadoP += (*acum);
-         delete acum;
-     }
-    
-    tiempoP = stop_timer();
-    cout << "\n******************************************************************" << endl;
-    cout << "Resultado en Paralelo = " << setprecision(5) << resultadoP << "\n";
-    cout << "Tiempo Promedio =  " << setprecision(5) << ( tiempoP / N ) << "\n";
-
-    delete [] a;
-
-    /* ================================================================ */
-
-    /* ===================== Llamada de función en paralelo ==================== */
-
-    double speedup = tiempoS / tiempoP;
-    cout << "\n====**********************************************************====" << endl;
-    cout << "Speedup =  " << setprecision(5) << speedup << "\n";
-
-
-    /* ================================================================ */
-
-    return 0;
+	// Se juntan los hilos para asegurar que los últimos babuinos crucen la cuerda.
+	for (int i = 0; i < BABOONS_TO_CROSS; ++i){
+		pthread_join(baboons[i], NULL);
+	}
 }
