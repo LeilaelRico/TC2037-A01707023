@@ -61,7 +61,7 @@ void *eastbound_baboon(void*){
 				sem_wait(&rope_mut);						// Acceso exclusivo a la cuerda en caso de ser el primer babuino a cruzar.
 			sem_post(&crossers_mut);						// Quita el acceso a la cuerda.
 			cross_rope(crossers_copy);						// Los babuinos anteriormente guardados cruzan la cuerda.
-			sem_wait(&crossers_mut);						// get access to crossers again, after crossinfaltg
+			sem_wait(&crossers_mut);						// Nuevamente accede a los que cruzan, una vez que los babuinos en la cuerda hayan cruzado.
 			--crossers;										// El número de babuinos a cruzar decrece.
 			if (crossers == 0)
 				sem_post(&rope_mut);						// En caso de que quede un último babuino, quitarle el acceso a la cuerda
