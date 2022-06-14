@@ -1,7 +1,9 @@
 # Ejecución del programa.
-Para compilarlo, introducir el siguiente comando en consola:   
+Plataforma de desarrollo: MacOS   
 
-    g++ Act_Babuinos.cpp -lpthread   
+Para compilarlo, introducir el siguiente comando en consola:   
+ 
+    g++ -std=c++11 Act_Babuinos.cpp -pthread
     
 Para su ejecución, posteriormente:  
 
