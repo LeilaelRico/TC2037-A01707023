@@ -1,5 +1,5 @@
 /* *********************************************************************************
- ITESM Querétato
+ ITESM Querétaro
  Olivia Araceli Morales Quezada A01707371
  Ricardo Núñez Alanís A01703259
  Cristian Leilael Rico Espinosa A01707023
