@@ -1,15 +1,14 @@
 /* *********************************************************************************
-
  ITESM Querétato
  Olivia Araceli Morales Quezada A01707371
  Ricardo Núñez Alanís A01703259
  Cristian Leilael Rico Espinosa A01707023
-
  Basado en el Trabajo de Paul Rehkugler (https://github.com/paulrehkugler)
 	Repositorio: https://github.com/paulrehkugler/Baboons
-
 ********************************************************************************* */
 
+
+#include <sys/types.h>
 #include <semaphore.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -20,6 +19,7 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
+
 
 using namespace std;
 
