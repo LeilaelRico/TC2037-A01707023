@@ -1,0 +1,34 @@
+body {
+    background-color: #686767;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
+.palabraReservada {
+    color: #ffffff;
+}
+
+.comentario {
+    color: #a3d8a7;
+    font-style: italic;
+}
+
+.string {
+    color: #f7d190;
+}
+
+.variable {
+    color: #d68be9;
+}
+
+.operador {
+    color: #8bdce9;
+}
+
+.numero {
+    color: #f5bdea;
+}
+
+.otro {
+    color: #f5f37e;
+}
+
