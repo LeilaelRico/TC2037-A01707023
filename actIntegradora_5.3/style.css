@@ -1,34 +1,34 @@
 body {
-    background-color: #686767;
+    background-color: #2E302F;
     font-family: 'Trebuchet MS', sans-serif;
+    color:  #FFFFFF;
 }
 
 .palabraReservada {
-    color: #ffffff;
+    color: hsl(297, 72%, 60%);
 }
 
 .comentario {
-    color: #a3d8a7;
+    color: #15982a;
     font-style: italic;
 }
 
 .string {
-    color: #f7d190;
+    color: #fffb00;
 }
 
 .variable {
-    color: #d68be9;
+    color:rgb(99, 215, 247);
 }
 
 .operador {
-    color: #8bdce9;
+    color: #ed8924;
 }
 
 .numero {
-    color: #f5bdea;
+    color: #bea4ff;
 }
 
 .otro {
-    color: #f5f37e;
+    color:hsl(353, 100%, 50%)
 }
-
